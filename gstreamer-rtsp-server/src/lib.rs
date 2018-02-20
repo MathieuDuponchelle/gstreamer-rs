@@ -51,11 +51,13 @@ mod r_t_s_p_address_pool;
 mod r_t_s_p_client;
 mod r_t_s_p_session_pool;
 mod r_t_s_p_context;
+mod r_t_s_p_media_factory;
 
 pub use r_t_s_p_server::RTSPServerExtManual;
 pub use r_t_s_p_address_pool::RTSPAddressPoolExtManual;
 pub use r_t_s_p_client::RTSPClientExtManual;
 pub use r_t_s_p_session_pool::RTSPSessionPoolExtManual;
+pub use r_t_s_p_media_factory::RTSPMediaFactoryExtManual;
 
 pub use r_t_s_p_context::*;
 
@@ -71,4 +73,5 @@ pub mod prelude {
     pub use r_t_s_p_address_pool::RTSPAddressPoolExtManual;
     pub use r_t_s_p_client::RTSPClientExtManual;
     pub use r_t_s_p_session_pool::RTSPSessionPoolExtManual;
+    pub use r_t_s_p_media_factory::RTSPMediaFactoryExtManual;
 }
