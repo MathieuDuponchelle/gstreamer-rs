@@ -3112,6 +3112,19 @@ g_object_unref() after usage.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_do_retransmission"
+              c:identifier="gst_rtsp_media_get_do_retransmission"
+              version="1.16">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether retransmission requests will be sent</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="media" transfer-ownership="none">
+            <type name="RTSPMedia" c:type="GstRTSPMedia*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_element" c:identifier="gst_rtsp_media_get_element">
         <doc xml:space="preserve">Get the element that was used when constructing @media.</doc>
         <return-value transfer-ownership="full">
@@ -3563,6 +3576,22 @@ gst_rtsp_media_prepare().</doc>
                      allow-none="1">
             <doc xml:space="preserve">#GstClock to be used</doc>
             <type name="Gst.Clock" c:type="GstClock*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_do_retransmission"
+              c:identifier="gst_rtsp_media_set_do_retransmission"
+              version="1.16">
+        <doc xml:space="preserve">Set whether retransmission requests will be sent</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="media" transfer-ownership="none">
+            <type name="RTSPMedia" c:type="GstRTSPMedia*"/>
+          </instance-parameter>
+          <parameter name="do_retransmission" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>
@@ -4607,6 +4636,19 @@ of all medias created from this factory.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_do_retransmission"
+              c:identifier="gst_rtsp_media_factory_get_do_retransmission"
+              version="1.16">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Whether retransmission requests will be sent for receiving media</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="factory" transfer-ownership="none">
+            <type name="RTSPMediaFactory" c:type="GstRTSPMediaFactory*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_latency"
               c:identifier="gst_rtsp_media_factory_get_latency">
         <doc xml:space="preserve">Get the latency that is used for receiving media</doc>
@@ -4862,6 +4904,23 @@ of all medias created from this factory.</doc>
                      allow-none="1">
             <doc xml:space="preserve">the clock to be used by the media factory</doc>
             <type name="Gst.Clock" c:type="GstClock*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_do_retransmission"
+              c:identifier="gst_rtsp_media_factory_set_do_retransmission"
+              version="1.16">
+        <doc xml:space="preserve">Set whether retransmission requests will be sent for
+receiving media</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="factory" transfer-ownership="none">
+            <type name="RTSPMediaFactory" c:type="GstRTSPMediaFactory*"/>
+          </instance-parameter>
+          <parameter name="do_retransmission" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>
@@ -5605,356 +5664,6 @@ g_object_unref() after usage.</doc>
     <record name="RTSPMountPointsPrivate"
             c:type="GstRTSPMountPointsPrivate"
             disguised="1">
-    </record>
-    <class name="RTSPOnvifClient"
-           c:symbol-prefix="rtsp_onvif_client"
-           c:type="GstRTSPOnvifClient"
-           parent="RTSPClient"
-           glib:type-name="GstRTSPOnvifClient"
-           glib:get-type="gst_rtsp_onvif_client_get_type"
-           glib:type-struct="RTSPOnvifClientClass">
-      <field name="parent">
-        <type name="RTSPClient" c:type="GstRTSPClient"/>
-      </field>
-      <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
-    </class>
-    <record name="RTSPOnvifClientClass"
-            c:type="GstRTSPOnvifClientClass"
-            glib:is-gtype-struct-for="RTSPOnvifClient">
-      <field name="parent">
-        <type name="RTSPClientClass" c:type="GstRTSPClientClass"/>
-      </field>
-      <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="20">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
-    </record>
-    <class name="RTSPOnvifMedia"
-           c:symbol-prefix="rtsp_onvif_media"
-           c:type="GstRTSPOnvifMedia"
-           parent="RTSPMedia"
-           glib:type-name="GstRTSPOnvifMedia"
-           glib:get-type="gst_rtsp_onvif_media_get_type"
-           glib:type-struct="RTSPOnvifMediaClass">
-      <method name="collect_backchannel"
-              c:identifier="gst_rtsp_onvif_media_collect_backchannel"
-              version="1.14">
-        <doc xml:space="preserve">Find the ONVIF backchannel depayloader element. It should be named
-'depay_backchannel', be placed in a bin called 'onvif-backchannel'
-and return all supported RTP caps on a caps query. Complete RTP caps with
-at least the payload type, clock-rate and encoding-name are required.
-
-A new #GstRTSPStream is created for the backchannel if found.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if a backchannel stream could be found and created</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="media" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstRTSPOnvifMedia</doc>
-            <type name="RTSPOnvifMedia" c:type="GstRTSPOnvifMedia*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_backchannel_bandwidth"
-              c:identifier="gst_rtsp_onvif_media_get_backchannel_bandwidth"
-              version="1.14">
-        <doc xml:space="preserve">Get the configured/supported bandwidth of the ONVIF backchannel pipeline in
-bits per second.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the configured/supported backchannel bandwidth.</doc>
-          <type name="guint" c:type="guint"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="media" transfer-ownership="none">
-            <type name="RTSPOnvifMedia" c:type="GstRTSPOnvifMedia*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="set_backchannel_bandwidth"
-              c:identifier="gst_rtsp_onvif_media_set_backchannel_bandwidth"
-              version="1.14">
-        <doc xml:space="preserve">Set the configured/supported bandwidth of the ONVIF backchannel pipeline in
-bits per second.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="media" transfer-ownership="none">
-            <type name="RTSPOnvifMedia" c:type="GstRTSPOnvifMedia*"/>
-          </instance-parameter>
-          <parameter name="bandwidth" transfer-ownership="none">
-            <doc xml:space="preserve">the bandwidth in bits per second</doc>
-            <type name="guint" c:type="guint"/>
-          </parameter>
-        </parameters>
-      </method>
-      <field name="parent">
-        <type name="RTSPMedia" c:type="GstRTSPMedia"/>
-      </field>
-      <field name="priv">
-        <type name="RTSPOnvifMediaPrivate" c:type="GstRTSPOnvifMediaPrivate*"/>
-      </field>
-      <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
-    </class>
-    <record name="RTSPOnvifMediaClass"
-            c:type="GstRTSPOnvifMediaClass"
-            glib:is-gtype-struct-for="RTSPOnvifMedia">
-      <field name="parent">
-        <type name="RTSPMediaClass" c:type="GstRTSPMediaClass"/>
-      </field>
-      <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="20">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
-    </record>
-    <class name="RTSPOnvifMediaFactory"
-           c:symbol-prefix="rtsp_onvif_media_factory"
-           c:type="GstRTSPOnvifMediaFactory"
-           parent="RTSPMediaFactory"
-           glib:type-name="GstRTSPOnvifMediaFactory"
-           glib:get-type="gst_rtsp_onvif_media_factory_get_type"
-           glib:type-struct="RTSPOnvifMediaFactoryClass">
-      <constructor name="new"
-                   c:identifier="gst_rtsp_onvif_media_factory_new"
-                   version="1.14">
-        <doc xml:space="preserve">Create a new #GstRTSPOnvifMediaFactory</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">A new #GstRTSPOnvifMediaFactory</doc>
-          <type name="RTSPMediaFactory" c:type="GstRTSPMediaFactory*"/>
-        </return-value>
-      </constructor>
-      <function name="requires_backchannel"
-                c:identifier="gst_rtsp_onvif_media_factory_requires_backchannel"
-                version="1.14">
-        <doc xml:space="preserve">Checks whether the client request requires backchannel.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the client request requires backchannel.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <parameter name="factory" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstRTSPMediaFactory</doc>
-            <type name="RTSPMediaFactory" c:type="GstRTSPMediaFactory*"/>
-          </parameter>
-          <parameter name="ctx" transfer-ownership="none">
-            <type name="RTSPContext" c:type="GstRTSPContext*"/>
-          </parameter>
-        </parameters>
-      </function>
-      <virtual-method name="has_backchannel_support"
-                      invoker="has_backchannel_support"
-                      version="1.14">
-        <doc xml:space="preserve">Returns %TRUE if an ONVIF backchannel is supported by the media factory.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if an ONVIF backchannel is supported by the media factory.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="factory" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstRTSPMediaFactory</doc>
-            <type name="RTSPOnvifMediaFactory"
-                  c:type="GstRTSPOnvifMediaFactory*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
-      <method name="get_backchannel_bandwidth"
-              c:identifier="gst_rtsp_onvif_media_factory_get_backchannel_bandwidth"
-              version="1.14">
-        <doc xml:space="preserve">Get the configured/supported bandwidth of the ONVIF backchannel pipeline in
-bits per second.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the configured/supported backchannel bandwidth.</doc>
-          <type name="guint" c:type="guint"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="factory" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstRTSPMediaFactory</doc>
-            <type name="RTSPOnvifMediaFactory"
-                  c:type="GstRTSPOnvifMediaFactory*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_backchannel_launch"
-              c:identifier="gst_rtsp_onvif_media_factory_get_backchannel_launch"
-              version="1.14">
-        <doc xml:space="preserve">Get the gst_parse_launch() pipeline description that will be used in the
-default prepare vmethod for generating the ONVIF backchannel pipeline.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the configured backchannel launch description. g_free() after
-usage.</doc>
-          <type name="utf8" c:type="gchar*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="factory" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstRTSPMediaFactory</doc>
-            <type name="RTSPOnvifMediaFactory"
-                  c:type="GstRTSPOnvifMediaFactory*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="has_backchannel_support"
-              c:identifier="gst_rtsp_onvif_media_factory_has_backchannel_support"
-              version="1.14">
-        <doc xml:space="preserve">Returns %TRUE if an ONVIF backchannel is supported by the media factory.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if an ONVIF backchannel is supported by the media factory.</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="factory" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstRTSPMediaFactory</doc>
-            <type name="RTSPOnvifMediaFactory"
-                  c:type="GstRTSPOnvifMediaFactory*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="set_backchannel_bandwidth"
-              c:identifier="gst_rtsp_onvif_media_factory_set_backchannel_bandwidth"
-              version="1.14">
-        <doc xml:space="preserve">Set the configured/supported bandwidth of the ONVIF backchannel pipeline in
-bits per second.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="factory" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstRTSPMediaFactory</doc>
-            <type name="RTSPOnvifMediaFactory"
-                  c:type="GstRTSPOnvifMediaFactory*"/>
-          </instance-parameter>
-          <parameter name="bandwidth" transfer-ownership="none">
-            <doc xml:space="preserve">the bandwidth in bits per second</doc>
-            <type name="guint" c:type="guint"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_backchannel_launch"
-              c:identifier="gst_rtsp_onvif_media_factory_set_backchannel_launch"
-              version="1.14">
-        <doc xml:space="preserve">The gst_parse_launch() line to use for constructing the ONVIF backchannel
-pipeline in the default prepare vmethod if requested by the client.
-
-The pipeline description should return a GstBin as the toplevel element
-which can be accomplished by enclosing the description with brackets '('
-')'.
-
-The description should return a pipeline with a single depayloader named
-depay_backchannel. A caps query on the depayloader's sinkpad should return
-all possible, complete RTP caps that are going to be supported. At least
-the payload type, clock-rate and encoding-name need to be specified.
-
-Note: The pipeline part passed here must end in sinks that are not waiting
-until pre-rolling before reaching the PAUSED state, i.e. setting
-async=false on #GstBaseSink. Otherwise the whole media will not be able to
-prepare.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="factory" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstRTSPMediaFactory</doc>
-            <type name="RTSPOnvifMediaFactory"
-                  c:type="GstRTSPOnvifMediaFactory*"/>
-          </instance-parameter>
-          <parameter name="launch" transfer-ownership="none">
-            <doc xml:space="preserve">the launch description</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <field name="parent">
-        <type name="RTSPMediaFactory" c:type="GstRTSPMediaFactory"/>
-      </field>
-      <field name="priv">
-        <type name="RTSPOnvifMediaFactoryPrivate"
-              c:type="GstRTSPOnvifMediaFactoryPrivate*"/>
-      </field>
-      <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
-    </class>
-    <record name="RTSPOnvifMediaFactoryClass"
-            c:type="GstRTSPOnvifMediaFactoryClass"
-            glib:is-gtype-struct-for="RTSPOnvifMediaFactory">
-      <field name="parent">
-        <type name="RTSPMediaFactoryClass" c:type="GstRTSPMediaFactoryClass"/>
-      </field>
-      <field name="has_backchannel_support">
-        <callback name="has_backchannel_support">
-          <return-value transfer-ownership="none">
-            <doc xml:space="preserve">%TRUE if an ONVIF backchannel is supported by the media factory.</doc>
-            <type name="gboolean" c:type="gboolean"/>
-          </return-value>
-          <parameters>
-            <parameter name="factory" transfer-ownership="none">
-              <doc xml:space="preserve">a #GstRTSPMediaFactory</doc>
-              <type name="RTSPOnvifMediaFactory"
-                    c:type="GstRTSPOnvifMediaFactory*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="20">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
-    </record>
-    <record name="RTSPOnvifMediaFactoryPrivate"
-            c:type="GstRTSPOnvifMediaFactoryPrivate"
-            disguised="1">
-    </record>
-    <record name="RTSPOnvifMediaPrivate"
-            c:type="GstRTSPOnvifMediaPrivate"
-            disguised="1">
-    </record>
-    <class name="RTSPOnvifServer"
-           c:symbol-prefix="rtsp_onvif_server"
-           c:type="GstRTSPOnvifServer"
-           parent="RTSPServer"
-           glib:type-name="GstRTSPOnvifServer"
-           glib:get-type="gst_rtsp_onvif_server_get_type"
-           glib:type-struct="RTSPOnvifServerClass">
-      <constructor name="new" c:identifier="gst_rtsp_onvif_server_new">
-        <doc xml:space="preserve">Create a new #GstRTSPOnvifServer instance.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new #GstRTSPOnvifServer</doc>
-          <type name="RTSPServer" c:type="GstRTSPServer*"/>
-        </return-value>
-      </constructor>
-      <field name="parent">
-        <type name="RTSPServer" c:type="GstRTSPServer"/>
-      </field>
-      <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
-    </class>
-    <record name="RTSPOnvifServerClass"
-            c:type="GstRTSPOnvifServerClass"
-            glib:is-gtype-struct-for="RTSPOnvifServer">
-      <field name="parent">
-        <type name="RTSPServerClass" c:type="GstRTSPServerClass"/>
-      </field>
-      <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="20">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
     </record>
     <record name="RTSPPermissions"
             c:type="GstRTSPPermissions"
@@ -8385,6 +8094,24 @@ be called when @stream has been joined.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="handle_keymgmt"
+              c:identifier="gst_rtsp_stream_handle_keymgmt"
+              version="1.16">
+        <doc xml:space="preserve">Parse and handle a KeyMgmt header.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTSPStream</doc>
+            <type name="RTSPStream" c:type="GstRTSPStream*"/>
+          </instance-parameter>
+          <parameter name="keymgmt" transfer-ownership="none">
+            <doc xml:space="preserve">a keymgmt header</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="has_control" c:identifier="gst_rtsp_stream_has_control">
         <doc xml:space="preserve">Check if @stream has the control string @control.</doc>
         <return-value transfer-ownership="none">
@@ -8643,6 +8370,25 @@ not be sent to the values configured in @trans.
           <parameter name="trans" transfer-ownership="none">
             <doc xml:space="preserve">a #GstRTSPStreamTransport</doc>
             <type name="RTSPStreamTransport" c:type="GstRTSPStreamTransport*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="request_aux_receiver"
+              c:identifier="gst_rtsp_stream_request_aux_receiver"
+              version="1.16">
+        <doc xml:space="preserve">Creating a rtxreceive bin</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a #GstElement.</doc>
+          <type name="Gst.Element" c:type="GstElement*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stream" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTSPStream</doc>
+            <type name="RTSPStream" c:type="GstRTSPStream*"/>
+          </instance-parameter>
+          <parameter name="sessid" transfer-ownership="none">
+            <doc xml:space="preserve">the session id</doc>
+            <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
       </method>
@@ -10106,11 +9852,6 @@ port pair in multicast. No response is sent when the check returns
               value="auth.check.url"
               c:type="GST_RTSP_AUTH_CHECK_URL">
       <doc xml:space="preserve">Check the URL and methods</doc>
-      <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="RTSP_ONVIF_BACKCHANNEL_REQUIREMENT"
-              value="www.onvif.org/ver20/backchannel"
-              c:type="GST_RTSP_ONVIF_BACKCHANNEL_REQUIREMENT">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="RTSP_PERM_MEDIA_FACTORY_ACCESS"
